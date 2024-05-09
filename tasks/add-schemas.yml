@@ -1,4 +1,3 @@
-
 - name: Search for installed schemas
   community.general.ldap_search:
     dn: "cn=config"
@@ -8,6 +7,10 @@
   register: out_installed_schemas
 
 - name: Add schemas
+  # FIXME:
+  # noqa: risky-shell-pipe
+  # OK because of when: "item not in installed_schemas":
+  # noqa: no-changed-when
   vars:
     installed_schemas: "{{ out_installed_schemas | json_query('results[].cn') | map('regex_replace', '^\\{[0-9]+\\}(.*)$', '\\1') | list }}"
   loop: "{{ slapd_schemas }}"

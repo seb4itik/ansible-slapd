@@ -11,7 +11,7 @@
     installed_modules: "{{ out_installed_modules | json_query('results[].olcModuleLoad') | map('regex_replace', '^\\{[0-9]+\\}(.*)$', '\\1') | list }}"
   loop: "{{ slapd_modules }}"
   when: "item not in installed_modules"
-  ansible.builtin.ldap_entry:
+  community.general.ldap_entry:
     dn: "cn=module,cn=config"
     objectClass: "olcModuleList"
     attributes:

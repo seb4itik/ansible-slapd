@@ -40,25 +40,25 @@
   ansible.builtin.include_tasks: "create-database.yml"
 
 - name: Root OLC configuration
-  ansible.builtin.ldap_attrs:
+  community.general.ldap_attrs:
     dn: "cn=config"
     attributes: "{{ slapd_config_olc }}"
     state: "exact"
 
 - name: Database configuration - frontend
-  ansible.builtin.ldap_attrs:
+  community.general.ldap_attrs:
     dn: "olcDatabase={-1}frontend,cn=config"
     attributes: "{{ slapd_config_db_frontend }}"
     state: "exact"
 
 - name: Database configuration - config
-  ansible.builtin.ldap_attrs:
+  community.general.ldap_attrs:
     dn: "olcDatabase={0}config,cn=config"
     attributes: "{{ slapd_config_db_config }}"
     state: "exact"
 
 - name: Database configuration - mdb
-  ansible.builtin.ldap_attrs:
+  community.general.ldap_attrs:
     dn: "olcDatabase={1}mdb,cn=config"
     attributes: "{{ slapd_config_db_mdb }}"
     state: "exact"
