@@ -1,7 +1,7 @@
 Role slapd
 ==========
 
-This install and configure OpenLDAP `slapd` with an MDB database.
+Install and configure OpenLDAP `slapd` with an MDB database backend.
 
 
 Requirements
@@ -121,16 +121,16 @@ Example Playbook
            timeout=1
            starttls=yes'
       olcMultiProvider: "TRUE"
-  ansible.builtin.import_role:
-    name: "slapd"
+  ansible.builtin.include_role:
+    name: "seb4itik.slapd"
 
 - name: Copy SSL certificate, key and CA
   loop:
     - name: "CA-bundle.crt"
       mode: "0644"
-    - name: "_test.me.crt"
+    - name: "_.test.me.crt"
       mode: "0644"
-    - name: "_test.me.key"
+    - name: "_.test.me.key"
       mode: "0640"
   ansible.builtin.copy:
     src: "files/{{ item.name }}"
@@ -144,10 +144,10 @@ Example Playbook
     slapd_services: "ldap:/// ldaps:/// ldapi:///"
     slapd_config_olc:
       olcTLSCACertificateFile: "/etc/ldap/CA-bundle.crt"
-      olcTLSCertificateFile: "/etc/ldap/_test.me.crt"
-      olcTLSCertificateKeyFile: "/etc/ldap/_test.me.key"
-  ansible.builtin.import_role:
-    name: "slapd"
+      olcTLSCertificateFile: "/etc/ldap/_.test.me.crt"
+      olcTLSCertificateKeyFile: "/etc/ldap/_.test.me.key"
+  ansible.builtin.include_role:
+    name: "seb4itik.slapd"
 ```
 
 
