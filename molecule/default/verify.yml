@@ -3,23 +3,19 @@
   gather_facts: true
 
   tasks:
-  
+
   - name: Collect packages as facts
-    package_facts:
+    ansible.builtin.package_facts:
  
   - name: Collect services as facts
-    service_facts:
- 
-# - name: Collect ports as facts
-#   listen_ports_facts:
+    ansible.builtin.service_facts:
 
   - name: Debug1
     ansible.builtin.debug:
       var: ansible_facts
 
   - name: Check slapd installed and running
-    assert:
+    ansible.builtin.assert:
       that:
-      - "'slapd' in ansible_facts.packages"
-      - "ansible_facts.services['slapd.service'].state == 'running'"
-#     - "389 in ansible_facts.tcp_listen | map(attribute='port')"
+        - "'slapd' in ansible_facts.packages"
+        - "ansible_facts.services['slapd.service'].state == 'running'"
