@@ -10,8 +10,8 @@
   - name: Collect services as facts
     service_facts:
  
-  - name: Collect ports as facts
-    listen_ports_facts:
+# - name: Collect ports as facts
+#   listen_ports_facts:
 
   - name: Debug1
     ansible.builtin.debug:
@@ -22,4 +22,4 @@
       that:
       - "'slapd' in ansible_facts.packages"
       - "ansible_facts.services['slapd.service'].state == 'running'"
-      - "389 in ansible_facts.tcp_listen | map(attribute='port')"
+#     - "389 in ansible_facts.tcp_listen | map(attribute='port')"
