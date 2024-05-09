@@ -53,7 +53,7 @@
 
 - name: Database configuration - config
   ansible.builtin.ldap_attrs:
-    dn: "cn=config"
+    dn: "olcDatabase={0}config,cn=config"
     attributes: "{{ slapd_config_db_config }}"
     state: "exact"
 
