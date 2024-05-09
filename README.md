@@ -13,15 +13,17 @@ Requirements
 pip3 install jmespath
 ```
 
+This role must be run as `root` but it will not `become` by itself.
+
 
 Role Variables
 --------------
 
 | Name                       | Default/Required       | Description                                                                  |
-|----------------------------|:----------------------:|------------------------------------------------------------------------------|
-| `slapd_rootdn`             | :heavy_check_mark:     | Root DN for the MDB backend.                                                 |
-| `slapd_admin_dn`           | :heavy_check_mark:     | Administrator DN for the MDB backend.                                        |
-| `slapd_admin_pw`           | :heavy_check_mark:     | Password of administrator DN for the MDB backend.                            |
+|----------------------------|------------------------|------------------------------------------------------------------------------|
+| `slapd_rootdn`             | **required**           | Root DN for the MDB backend.                                                 |
+| `slapd_admin_dn`           | **required**           | Administrator DN for the MDB backend.                                        |
+| `slapd_admin_pw`           | **required**           | Password of administrator DN for the MDB backend.                            |
 | `slapd_modules`            | `[]`                   | List of modules to add.                                                      |
 | `slapd_module_path`        | `"/usr/lib/ldap"`      | Path to the directory of modules.                                            |
 | `slapd_schemas`            | `[]`                   | List of schemas to add (.ldiff or .schema format).                           |
@@ -74,19 +76,15 @@ Example Playbook
         - '{0}dn.regex="cn=SyncRepl,ou=DIT Roles,cn=admin,dc=test,dc=me" size=unlimited time=unlimited'
       olcDbIndex:
         - "mail eq"
-        - "mailLocalAddress eq"
         - "sendmailMTAHost eq"
         - "sendmailMTAAliasGrouping eq"
         - "sendmailMTACluster eq"
         - "sendmailMTAKey eq"
         - "sambaPrimaryGroupSID eq"
         - "sambaSID eq"
-        - "sambaGroupType eq"
-        - "sambaSIDList eq"
       olcAccess:
         - '{0}to attrs=userPassword,shadowLastChange,sambaNTPassword,sambaLMPassword
            by dn.base="cn=admin,ou=DIT Roles,dc=test,dc=me" write
-           by dn.base="cn=pwadmin,ou=DIT Roles,dc=test,dc=me" write
            by dn.base="cn=sambaadmin,ou=DIT Roles,dc=test,dc=me" write
            by dn.base="cn=SyncRepl,ou=DIT Roles,dc=test,dc=me" read
            by anonymous auth

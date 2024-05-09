@@ -49,7 +49,7 @@
     attributes:
       o: "{{ slapd_rootdn | split(',') | first | split('=') | last }}"
 
-# FIXME: à tester
+# FIXME: to be tested
 - name: Create root record (dcObject)
   when: "slapd_rootdn is regex('^dc=')"
   community.general.ldap_entry:

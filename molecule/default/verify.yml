@@ -1,3 +1,5 @@
+# FIXME: add (a lot) of tests
+
 - name: Verify
   hosts: all
   gather_facts: true
