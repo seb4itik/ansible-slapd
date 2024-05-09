@@ -1,0 +1,22 @@
+galaxy_info:
+  namespace: "seb4itik"
+
+  author: "Sébastien Namèche"
+  description: "Configure an OpenLDAP slapd instance"
+  company: "iTik"
+
+  license: "MIT"
+
+  min_ansible_version: "2.16"
+
+  platforms:
+    - name: "Debian"
+      versions:
+        - "bookworm"
+
+  galaxy_tags:
+    - "slapd"
+    - "openldap"
+    - "ldap"
+
+dependencies: []

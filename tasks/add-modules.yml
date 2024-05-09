@@ -1,0 +1,21 @@
+- name: Search for installed modules
+  community.general.ldap_search:
+    dn: "cn=config"
+    filter: "(objectClass=olcModuleList)"
+    scope: "children"
+    attrs: ["olcModuleLoad"]
+  register: out_installed_modules
+
+- name: Add modules
+  vars:
+    installed_modules: "{{ out_installed_modules | json_query('results[].olcModuleLoad') | map('regex_replace', '^\\{[0-9]+\\}(.*)$', '\\1') | list }}"
+  loop: "{{ slapd_modules }}"
+  when: "item not in installed_modules"
+  ansible.builtin.ldap_entry:
+    dn: "cn=module,cn=config"
+    objectClass: "olcModuleList"
+    attributes:
+      olcModuleLoad: "{{ item }}"
+      olcModulePath: "{{ slapd_module_path }}"
+
+# FIXME: Removes modules not in out_installed_modules

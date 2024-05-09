@@ -1,0 +1,18 @@
+---
+slapd_modules: []
+slapd_module_path: "/usr/lib/ldap"
+
+slapd_schemas: []
+slapd_schema_path: "/etc/ldap/schema"
+
+slapd_services: "ldap:/// ldapi:///"
+slapd_user: "openldap"
+slapd_group: "{{ slapd_user }}"
+
+slapd_db_directory: "/var/lib/ldap"
+slapd_db_checkpoint: "512 30"
+
+slapd_config_olc: {}
+slapd_config_db_frontend: {}
+slapd_config_db_config: {}
+slapd_config_db_mdb: {}

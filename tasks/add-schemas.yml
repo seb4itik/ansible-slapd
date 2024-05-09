@@ -1,0 +1,22 @@
+
+- name: Search for installed schemas
+  community.general.ldap_search:
+    dn: "cn=config"
+    filter: "(objectClass=olcSchemaConfig)"
+    scope: "children"
+    attrs: ["cn"]
+  register: out_installed_schemas
+
+- name: Add schemas
+  vars:
+    installed_schemas: "{{ out_installed_schemas | json_query('results[].cn') | map('regex_replace', '^\\{[0-9]+\\}(.*)$', '\\1') | list }}"
+  loop: "{{ slapd_schemas }}"
+  when: "item not in installed_schemas"
+  ansible.builtin.shell: >
+    if [ -f "{{ slapd_schema_path }}/{{ item }}.ldif" ]; then
+      ldapadd -H ldapi:/// -f "{{ slapd_schema_path }}/{{ item }}.ldif"
+    elif [ -f "{{ slapd_schema_path }}/{{ item }}.schema" ]; then
+      schema2ldif "{{ slapd_schema_path }}/{{ item }}.schema" |ldapadd -H ldapi:///
+    else
+      exit -1
+    fi

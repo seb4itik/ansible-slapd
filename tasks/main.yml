@@ -1,0 +1,71 @@
+---
+- name: Install pre-required packages
+  ansible.builtin.apt:
+    name: "debconf-utils"
+
+- name: Pre-configure slapd dummy.domain with debconf
+  ansible.builtin.debconf:
+    name: "slapd"
+    question: "slapd/domain"
+    value: "dummy.domain"
+    vtype: "string"
+
+- name: Install required packages
+  ansible.builtin.apt:
+    name:
+      - "slapd"
+      - "schema2ldif"
+      - "python3-ldap"
+
+- name: Add schemas
+  ansible.builtin.include_tasks: "add-schemas.yml"
+
+- name: Add modules
+  ansible.builtin.include_tasks: "add-modules.yml"
+
+# FIXME: Overlays
+# FIXME: Monitor
+
+- name: Test if dummy.domain
+  community.general.ldap_search:
+    dn: "olcDatabase={1}mdb,cn=config"
+    filter: "(objectClass=olcDatabaseConfig)"
+    scope: "base"
+    attrs: ["olcSuffix"]
+  ignore_errors: true
+  register: out_olc_suffix
+
+- name: Create mdb database
+  when: "out_olc_suffix.failed or out_olc_suffix.results[0].olcSuffix == 'dc=dummy,dc=domain'"
+  ansible.builtin.include_tasks: "create-database.yml"
+
+- name: Root OLC configuration
+  ansible.builtin.ldap_attrs:
+    dn: "cn=config"
+    attributes: "{{ slapd_config_olc }}"
+    state: "exact"
+
+- name: Database configuration - frontend
+  ansible.builtin.ldap_attrs:
+    dn: "olcDatabase={-1}frontend,cn=config"
+    attributes: "{{ slapd_config_db_frontend }}"
+    state: "exact"
+
+- name: Database configuration - config
+  ansible.builtin.ldap_attrs:
+    dn: "cn=config"
+    attributes: "{{ slapd_config_db_config }}"
+    state: "exact"
+
+- name: Database configuration - mdb
+  ansible.builtin.ldap_attrs:
+    dn: "olcDatabase={1}mdb,cn=config"
+    attributes: "{{ slapd_config_db_mdb }}"
+    state: "exact"
+
+- name: Configure slapd services
+  ansible.builtin.lineinfile:
+    path: "/etc/default/slapd"
+    regexp: "^SLAPD_SERVICES="
+    line: 'SLAPD_SERVICES="{{ slapd_services }}"'
+  notify: Restart slapd

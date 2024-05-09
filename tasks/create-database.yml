@@ -1,0 +1,64 @@
+- name: Delete dummy.domain database
+  ansible.builtin.ldap_entry:
+    dn: "olcDatabase={1}mdb,cn=config"
+    state: "absent"
+
+- name: Empty database directory
+  with_items:
+    - "absent"
+    - "directory"
+  ansible.builtin.file:
+    path: "{{ slapd_db_directory }}"
+    state: "{{ item }}"
+    owner: "{{ slapd_user }}"
+    group: "{{ slapd_group }}"
+    mode: "0755"
+
+- name: Create mdb database
+  ansible.builtin.ldap_entry:
+    dn: "olcDatabase={1}mdb,cn=config"
+    objectClass:
+      - "olcDatabaseConfig"
+      - "olcMdbConfig"
+    attributes:
+      olcDbDirectory: "{{ slapd_db_directory }}"
+      olcDbCheckpoint: "{{ slapd_db_checkpoint }}"
+      olcDbMaxSize: 1073741824
+      olcSuffix: "{{ slapd_rootdn | mandatory }}"
+      olcRootDN: "{{ slapd_admin_dn | mandatory }}"
+      olcRootPW: "{{ slapd_admin_pw | mandatory }}"
+      olcLastMod: "TRUE"
+      olcAccess:
+        - "{0}to attrs=userPassword by self write by anonymous auth by * none"
+        - "{1}to attrs=shadowLastChange by self write by * read"
+        - "{2}to * by * read"
+      olcDbIndex:
+        - "objectClass eq"
+        - "cn,uid eq"
+        - "uidNumber,gidNumber eq"
+        - "member,memberUid eq"
+
+- name: Create root record (organization)
+  when: "slapd_rootdn is regex('^o=')"
+  ansible.builtin.ldap_entry:
+    bind_dn: "{{ slapd_admin_dn }}"
+    bind_pw: "{{ slapd_admin_pw }}"
+    dn: "{{ slapd_rootdn | mandatory }}"
+    objectClass:
+      - "organization"
+    attributes:
+      o: "{{ slapd_rootdn | split(',') | first | split('=') | last }}"
+
+# FIXME: à tester
+- name: Create root record (dcObject)
+  when: "slapd_rootdn is regex('^dc=')"
+  ansible.builtin.ldap_entry:
+    bind_dn: "{{ slapd_admin_dn }}"
+    bind_pw: "{{ slapd_admin_pw }}"
+    dn: "{{ slapd_rootdn | mandatory }}"
+    objectClass:
+      - "organization"
+      - "dcObject"
+    attributes:
+      o: "{{ slapd_rootdn | split(',') | first | split('=') | last }}"
+      dc: "{{ slapd_rootdn | split(',') | first | split('=') | last }}"
