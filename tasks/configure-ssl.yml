@@ -1,0 +1,32 @@
+- name: Configure slapd services (no SSL)
+  when: "not slapd_ssl"
+  ansible.builtin.lineinfile:
+    path: "/etc/default/slapd"
+    regexp: "^SLAPD_SERVICES="
+    line: 'SLAPD_SERVICES="ldap:/// ldapi:///"'
+  notify: Restart slapd
+
+- name: Configure slapd services (SSL)
+  when: "slapd_ssl"
+  ansible.builtin.lineinfile:
+    path: "/etc/default/slapd"
+    regexp: "^SLAPD_SERVICES="
+    line: 'SLAPD_SERVICES="ldap:/// ldaps:/// ldapi:///"'
+  notify: Restart slapd
+
+- name: Remove slapd user from SSL group
+  when: "not slapd_ssl"
+  ansible.builtin.user:
+    user: "{{ slapd_user }}"
+    groups:
+      - "{{ slapd_group }}"
+  notify: Restart slapd
+
+- name: Add slapd user do SSL group
+  when: "slapd_ssl"
+  ansible.builtin.user:
+    user: "{{ slapd_user }}"
+    groups:
+      - "{{ slapd_group }}"
+      - "{{ slapd_ssl_group }}"
+  notify: Restart slapd

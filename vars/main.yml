@@ -1,0 +1,143 @@
+---
+slapd_backend_objectclass:
+
+  # ( OLcfgDbOc:3.1
+  #    NAME 'olcLDAPConfig'
+  #    DESC 'LDAP backend configuration'
+  #    SUP olcDatabaseConfig
+  #    MAY (
+  #      olcDbURI $
+  #      olcDbStartTLS $
+  #      olcDbACLBind $
+  #      olcDbIDAssertBind $
+  #      olcDbIDAssertAuthzFrom $
+  #      olcDbIDAssertPassThru $
+  #      olcDbRebindAsUser $
+  #      olcDbChaseReferrals $
+  #      olcDbTFSupport $
+  #      olcDbProxyWhoAmI $
+  #      olcDbTimeout $
+  #      olcDbIdleTimeout $
+  #      olcDbConnTtl $
+  #      olcDbNetworkTimeout $
+  #      olcDbProtocolVersion $
+  #      olcDbSingleConn $
+  #      olcDbCancel $
+  #      olcDbQuarantine $
+  #      olcDbUseTemporaryConn $
+  #      olcDbConnectionPoolMax $
+  #      olcDbSessionTrackingRequest $
+  #      olcDbNoRefs $
+  #      olcDbNoUndefFilter
+  #      $ olcDbOnErr
+  #      $ olcDbKeepalive ) )
+  ldap: "olcLDAPConfig"
+
+  # ( OLcfgDbOc:12.1
+  #    NAME 'olcMdbConfig'
+  #    DESC 'MDB database configuration'
+  #    SUP olcDatabaseConfig
+  #    MUST
+  #      olcDbDirectory
+  #    MAY (
+  #      olcDbCheckpoint $
+  #      olcDbEnvFlags $
+  #      olcDbNoSync $
+  #      olcDbIndex $
+  #      olcDbMaxReaders $
+  #      olcDbMaxSize $
+  #      olcDbMode $
+  #      olcDbSearchStack $
+  #      olcDbMaxEntrySize $
+  #      olcDbRtxnSize $
+  #      olcDbMultival ) )
+  mdb: "olcMdbConfig"
+
+  # ( OLcfgDbOc:3.2
+  #    NAME 'olcMetaConfig'
+  #    DESC 'Meta backend configuration'
+  #    SUP olcDatabaseConfig
+  #    MAY (
+  #       olcDbConnTtl $
+  #       olcDbDnCacheTtl $
+  #       olcDbIdleTimeout $
+  #       olcDbOnErr $
+  #       olcDbPseudoRootBindDefer $
+  #       olcDbSingleConn $
+  #       olcDbUseTemporaryConn $
+  #       olcDbConnectionPoolMax $
+  #       olcDbBindTimeout $
+  #       olcDbCancel $
+  #       olcDbChaseReferrals $
+  #       olcDbClientPr $
+  #       olcDbDefaultTarget $
+  #       olcDbNetworkTimeout $
+  #       olcDbNoRefs $
+  #       olcDbNoUndefFilter $
+  #       olcDbNretries $
+  #       olcDbProtocolVersion $
+  #       olcDbQuarantine $
+  #       olcDbRebindAsUser $
+  #       olcDbSessionTrackingRequest $
+  #       olcDbStartTLS $
+  #       olcDbTFSupport ) )
+  meta: "olcMetaConfig"
+
+  # ( OLcfgDbOc:11.1
+  #    NAME 'olcDbPerlConfig'
+  #    DESC 'Perl DB configuration'
+  #    SUP olcDatabaseConfig
+  #    MUST (
+  #      olcPerlModulePath $
+  #      olcPerlModule )
+  #    MAY (
+  #    olcPerlFilterSearchResults $
+  #    olcPerlModuleConfig ) )
+  perl: "olcDbPerlConfig"
+
+  # ( OLcfgDbOc:5.1
+  #   NAME 'olcRelayConfig'
+  #   DESC 'Relay backend configuration'
+  #   SUP olcDatabaseConfig
+  #   MAY (
+  #     olcRelay ) )
+  relay: "olcRelayConfig"
+
+  # ( OLcfgDbOc:6.1
+  #    NAME 'olcSqlConfig'
+  #    DESC 'SQL backend configuration'
+  #    SUP olcDatabaseConfig
+  #    MUST
+  #     olcDbName
+  #    MAY (
+  #      olcDbHost $
+  #      olcDbUser $
+  #      olcDbPass $
+  #      olcSqlConcatPattern $
+  #      olcSqlSubtreeCond $
+  #      olcsqlChildrenCond $
+  #      olcSqlDnMatchCond $
+  #      olcSqlOcQuery $
+  #      olcSqlAtQuery $
+  #      olcSqlInsEntryStmt $
+  #      olcSqlCreateNeedsSelect $
+  #      olcSqlUpperFunc $
+  #      olcSqlUpperNeedsCast $
+  #      olcSqlStrCastFunc $
+  #      olcSqlDelEntryStmt $
+  #      olcSqlRenEntryStmt $
+  #      olcSqlDelObjClassesStmt $
+  #      olcSqlHasLDAPInfoDnRu $
+  #      olcSqlFailIfNoMapping $
+  #      olcSqlAllowOrphans $
+  #      olcSqlBaseObject $
+  #      olcSqlLayer $
+  #      olcSqlUseSubtreeShortcut $
+  #      olcSqlFetchAllAttrs $
+  #      olcSqlFetchAttrs $
+  #      olcSqlCheckSchema $
+  #      olcSqlAliasingKeyword $
+  #      olcSqlAliasingQuote $
+  #      olcSqlAutocommit $
+  #      olcSqlIdQuery ) )
+  sql: "olcSqlConfig"

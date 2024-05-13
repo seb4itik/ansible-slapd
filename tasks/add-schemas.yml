@@ -17,9 +17,9 @@
   when: "item not in installed_schemas"
   ansible.builtin.shell: >
     if [ -f "{{ slapd_schema_path }}/{{ item }}.ldif" ]; then
-      ldapadd -H ldapi:/// -f "{{ slapd_schema_path }}/{{ item }}.ldif"
+      ldapadd -Y EXTERNAL -H ldapi:/// -f "{{ slapd_schema_path }}/{{ item }}.ldif"
     elif [ -f "{{ slapd_schema_path }}/{{ item }}.schema" ]; then
-      schema2ldif "{{ slapd_schema_path }}/{{ item }}.schema" |ldapadd -H ldapi:///
+      schema2ldif "{{ slapd_schema_path }}/{{ item }}.schema" |ldapadd -Y EXTERNAL -H ldapi:///
     else
       exit -1
     fi

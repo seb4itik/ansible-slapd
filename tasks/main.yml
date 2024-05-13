@@ -1,13 +1,16 @@
 ---
 - name: Install pre-required packages
   ansible.builtin.apt:
-    name: "debconf-utils"
+    name:
+      - "debconf-utils"
+      - "ssl-cert"
 
-- name: Pre-configure slapd dummy.domain with debconf
+# Backend will be deleted by "Delete backends" task
+- name: Pre-configure slapd dummy.domain.to.delete with debconf
   ansible.builtin.debconf:
     name: "slapd"
     question: "slapd/domain"
-    value: "dummy.domain"
+    value: "dummy.domain.to.delete"
     vtype: "string"
 
 - name: Install required packages
@@ -26,18 +29,8 @@
 # FIXME: Overlays
 # FIXME: Monitor
 
-- name: Test if dummy.domain
-  community.general.ldap_search:
-    dn: "olcDatabase={1}mdb,cn=config"
-    filter: "(objectClass=olcDatabaseConfig)"
-    scope: "base"
-    attrs: ["olcSuffix"]
-  ignore_errors: true
-  register: out_olc_suffix
-
-- name: Create mdb database
-  when: "out_olc_suffix.failed or out_olc_suffix.results[0].olcSuffix == 'dc=dummy,dc=domain'"
-  ansible.builtin.include_tasks: "create-database.yml"
+- name: Configure SSL
+  ansible.builtin.include_tasks: "configure-ssl.yml"
 
 - name: Root OLC configuration
   community.general.ldap_attrs:
@@ -45,27 +38,27 @@
     attributes: "{{ slapd_config_olc }}"
     state: "exact"
 
-- name: Database configuration - frontend
+- name: Configuration - frontend
   community.general.ldap_attrs:
     dn: "olcDatabase={-1}frontend,cn=config"
-    attributes: "{{ slapd_config_db_frontend }}"
+    attributes: "{{ slapd_config_frontend }}"
     state: "exact"
 
-- name: Database configuration - config
+- name: Configuration - config
   community.general.ldap_attrs:
     dn: "olcDatabase={0}config,cn=config"
-    attributes: "{{ slapd_config_db_config }}"
+    attributes: "{{ slapd_config_config }}"
     state: "exact"
 
-- name: Database configuration - mdb
-  community.general.ldap_attrs:
-    dn: "olcDatabase={1}mdb,cn=config"
-    attributes: "{{ slapd_config_db_mdb }}"
-    state: "exact"
+- name: Backends creation/configuration
+  loop: "{{ slapd_config_backends }}"
+  vars:
+    suffix: "{{ item.attributes.olcSuffix | mandatory }}"
+    db_type: "{{ item.db_type | mandatory }}"
+    attributes: "{{ item.attributes }}"
+  ansible.builtin.include_tasks: "configure-backend.yml"
 
-- name: Configure slapd services
-  ansible.builtin.lineinfile:
-    path: "/etc/default/slapd"
-    regexp: "^SLAPD_SERVICES="
-    line: 'SLAPD_SERVICES="{{ slapd_services }}"'
-  notify: Restart slapd
+- name: Delete backends
+  vars:
+    wanted_suffixes: "{{ slapd_config_backends | map(attribute='attributes.olcSuffix') }}"
+  ansible.builtin.include_tasks: "delete-backends.yml"

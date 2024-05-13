@@ -1,0 +1,22 @@
+- name: Search for all suffixes
+  community.general.ldap_search:
+    dn: "cn=config"
+    filter: "(&(objectClass=olcDatabaseConfig)(olcSuffix=*))"
+    scope: "children"
+    attrs: ["olcSuffix", "olcDbDirectory"]
+  ignore_errors: true
+  register: out_existing_suffixes
+
+- name: Delete backend
+  loop: "{{ out_existing_suffixes.results }}"
+  when: "item.olcSuffix not in wanted_suffixes"
+  community.general.ldap_entry:
+    dn: "{{ item.dn }}"
+    state: "absent"
+
+- name: Delete backend directory
+  loop: "{{ out_existing_suffixes.results }}"
+  when: "item.olcSuffix not in wanted_suffixes"
+  ansible.builtin.file:
+    path: "{{ item.olcDbDirectory }}"
+    state: "absent"

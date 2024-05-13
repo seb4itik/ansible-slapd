@@ -1,0 +1,33 @@
+- name: Create directory {{ suffix }}
+  when: "'olcDbDirectory' in attributes"
+  ansible.builtin.file:
+    path: "{{ attributes.olcDbDirectory }}"
+    state: "directory"
+    owner: "{{ slapd_user }}"
+    group: "{{ slapd_group }}"
+    mode: "0750"
+
+# Find suffix
+- name: Search for suffix {{ suffix }}
+  community.general.ldap_search:
+    dn: "cn=config"
+    filter: "(&(objectClass=olcDatabaseConfig)(olcSuffix={{ suffix }}))"
+    scope: "children"
+    attrs: ["dn"]
+  ignore_errors: true
+  register: out_suffix
+
+# Suffix not found => creation
+- name: Database creation {{ suffix }}
+  when: "out_suffix.results | length == 0"
+  community.general.ldap_entry:
+    dn: "olcDatabase={999}{{ db_type }},cn=config"
+    objectClass: "{{ slapd_backend_objectclass[db_type] }}"
+    attributes: "{{ attributes }}"
+
+# Suffix found => update
+- name: Database configuration {{ suffix }}
+  when: "out_suffix.results | length == 1"
+  community.general.ldap_attrs:
+    dn: "{{ out_suffix.results[0].dn }}"
+    attributes: "{{ attributes }}"
