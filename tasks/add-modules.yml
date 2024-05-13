@@ -17,5 +17,3 @@
     attributes:
       olcModuleLoad: "{{ item }}"
       olcModulePath: "{{ slapd_module_path }}"
-
-# FIXME: Removes modules not in out_installed_modules

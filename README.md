@@ -16,7 +16,7 @@ This role must be run as `root` but it will **not** `become` by itself.
 
 ## Role Variables
 
-| Name                    | Default/Required     | Description                                                                           |
+| Name                    | Default              | Description                                                                           |
 |-------------------------|----------------------|---------------------------------------------------------------------------------------|
 | `slapd_user`            | `"openldap"`         | System user for `slapd`.                                                              |
 | `slapd_group`           | `"{{ slapd_user }}"` | Group user for `slapd`.                                                               |
@@ -34,11 +34,13 @@ This role must be run as `root` but it will **not** `become` by itself.
 ### slapd_ssl
 
 If `slapd_ssl` is `true`:
+
 - `slapd` system user (`slapd_user`) will be added to group `slapd_ssl_group`;
 - `SLAPD_SERVICES` variable will be set to `"ldap:/// ldaps:/// ldapi:///"` in `/etc/defaults/slapd` file;
 - `slapd` service will be restarted.
 
 At least, these parameters must be set in `slapd_config_olc`:
+
 - `olcTLSCertificateFile` (name of a file that should be under `/etc/ssl/certs`);
 - `olcTLSCertificateKeyFile` (name of a file that should be under `/etc/ssl/private`, owner `root`, group `ssl-cert`, mode `0640`);
 
@@ -47,11 +49,13 @@ At least, these parameters must be set in `slapd_config_olc`:
 `slapd_config_backends` is the list of backends to be in `slapd` configuration (except `olcDatabase={-1}frontend,cn=config`
 and `olcDatabase={0}config,cn=config` that will always exist).
 
-Each entry in this array is a dictionary with members:
+Each entry in this array is a dictionary with two members:
+
 - `db_type`: type of backend;
 - `attributes`: configuration attributes and values for this backend.
 
-Corresponding modules must loaded for each `db_type` used:
+Corresponding modules must be loaded for each `db_type` used:
+
 - `ldap`: module `back_ldap`;
 - `mdb`: module `back_mdb`;
 - `meta`: module `back_meta`; 
@@ -127,22 +131,20 @@ Collection `community.general`.
 
 ## Tips & Tricks
 
-FIXME
-
-- `olcAccess`, `olcSyncrepl`, `olcLimits` => {0}
-- case of `olcSyncrepl`
+- For parameters such as `olcAccess`, `olcSyncrepl`, `olcLimits`, ... that are ordered lists,
+you should prefix each item with `{N}`.
+- Be careful with the case of `olcSyncrepl` parameter!
 
 
 ## TODO
 
-- backends
-  - `asyncmeta`
-  - `dnssrv`
-  - `null`
-  - `passwd`
-  - `sock`
-- Overlays
-- Monitor
+Add support for:
+
+- backends `asyncmeta`, `dnssrv`, `null`, `passwd`, and `sock`;
+- overlays;
+- monitor backend;
+- remove modules (and schemas?).
+
 
 ## License
 

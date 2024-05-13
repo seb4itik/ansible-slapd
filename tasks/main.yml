@@ -5,7 +5,7 @@
       - "debconf-utils"
       - "ssl-cert"
 
-# Backend will be deleted by "Delete backends" task
+# This backend will be deleted by "Delete backends" task
 - name: Pre-configure slapd dummy.domain.to.delete with debconf
   ansible.builtin.debconf:
     name: "slapd"
@@ -25,9 +25,6 @@
 
 - name: Add modules
   ansible.builtin.include_tasks: "add-modules.yml"
-
-# FIXME: Overlays
-# FIXME: Monitor
 
 - name: Configure SSL
   ansible.builtin.include_tasks: "configure-ssl.yml"
