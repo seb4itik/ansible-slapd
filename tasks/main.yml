@@ -20,14 +20,14 @@
       - "schema2ldif"
       - "python3-ldap"
 
+- name: Configure SSL
+  ansible.builtin.include_tasks: "configure-ssl.yml"
+
 - name: Add schemas
   ansible.builtin.include_tasks: "add-schemas.yml"
 
 - name: Add modules
   ansible.builtin.include_tasks: "add-modules.yml"
-
-- name: Configure SSL
-  ansible.builtin.include_tasks: "configure-ssl.yml"
 
 - name: Root OLC configuration
   community.general.ldap_attrs:
