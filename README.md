@@ -125,7 +125,7 @@ Collection `community.general`.
               by dn.base="cn=admin,ou=DIT Roles,dc=test,dc=me" write
               by * read'
   roles:
-    - "slapd"
+    - "seb4itik.slapd"
 ```
 
 
