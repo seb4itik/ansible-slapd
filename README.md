@@ -138,12 +138,15 @@ you should prefix each item with `{N}`.
 
 ## TODO
 
-Add support for:
-
-- backends `asyncmeta`, `dnssrv`, `null`, `passwd`, and `sock`;
-- overlays;
-- monitor backend;
-- remove modules (and schemas?).
+- Manage role versions in *Ansible Galaxy*.
+- Write tests (but problem between *Docker* and *systemd*).
+- Validate other platforms (Ubuntu, Redhat, ...).
+- Add support for backends `asyncmeta`, `dnssrv`, `null`, `passwd`, and `sock`.
+- Add support for overlays.
+- Add support for monitor backend.
+- Remove modules not in `slapd_modules`.
+- Remove schemas not in `slapd_schemas`.
+- Remove configuration attributes not in `slapd_config_olc`, `slapd_config_frontend`, `slapd_config_config`, and `slapd_config_backends[]`. 
 
 
 ## License
