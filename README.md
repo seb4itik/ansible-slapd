@@ -147,13 +147,19 @@ you should prefix each item with `{N}`.
 - **DONE**: Add support for backends `asyncmeta`, `dnssrv`, `null`, `passwd`, and `sock`.
 - **BUG REPORTED**: Remove configuration attributes not in `slapd_config_olc`, `slapd_config_frontend`,
   `slapd_config_config`, and `slapd_config_backends[]` (but there is a bug in `community.general.ldap_attrs`,
-  [see](https://github.com/ansible-collections/community.general/issues/8354)).
+  [see](https://github.com/ansible-collections/community.general/issues/8354)). [^1]
+- **NOT POSSIBLE**: Remove modules not in `slapd_modules`.
+- **NOT POSSIBLE**: Remove schemas not in `slapd_schemas`.
 - Write tests (but problem between *Docker* and *systemd*).
 - Validate other platforms (Ubuntu, Redhat, ...).
 - Add support for overlays.
 - Add support for monitor backend.
-- Remove modules not in `slapd_modules`.
-- Remove schemas not in `slapd_schemas`.
+
+[^1]: Workaround for removing an attribute, use `[]`:
+```
+    slapd_config_olc:
+      olcLogLevel: []
+```
 
 
 ## License
