@@ -31,3 +31,4 @@
   community.general.ldap_attrs:
     dn: "{{ out_suffix.results[0].dn }}"
     attributes: "{{ attributes }}"
+    state: "exact"

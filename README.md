@@ -145,13 +145,14 @@ you should prefix each item with `{N}`.
 
 - **DONE**: Manage role versions in *Ansible Galaxy*.
 - **DONE**: Add support for backends `asyncmeta`, `dnssrv`, `null`, `passwd`, and `sock`.
+- Remove configuration attributes not in `slapd_config_olc`, `slapd_config_frontend`, `slapd_config_config`, and `slapd_config_backends[]`
+  (but there is a bug in `community.general.ldap_attrs`, [see](https://github.com/ansible-collections/community.general/issues/8354)).
 - Write tests (but problem between *Docker* and *systemd*).
 - Validate other platforms (Ubuntu, Redhat, ...).
 - Add support for overlays.
 - Add support for monitor backend.
 - Remove modules not in `slapd_modules`.
 - Remove schemas not in `slapd_schemas`.
-- Remove configuration attributes not in `slapd_config_olc`, `slapd_config_frontend`, `slapd_config_config`, and `slapd_config_backends[]`. 
 
 
 ## License
