@@ -58,9 +58,9 @@ slapd_backend_objectclass:
   #      olcDbConnectionPoolMax $
   #      olcDbSessionTrackingRequest $
   #      olcDbNoRefs $
-  #      olcDbNoUndefFilter
-  #      $ olcDbOnErr
-  #      $ olcDbKeepalive ) )
+  #      olcDbNoUndefFilter $
+  #      olcDbOnErr $
+  #      olcDbKeepalive ) )
   ldap: "olcLDAPConfig"
 
   # No specific config.
@@ -146,11 +146,11 @@ slapd_backend_objectclass:
   perl: "olcDbPerlConfig"
 
   # ( OLcfgDbOc:5.1
-  #   NAME 'olcRelayConfig'
-  #   DESC 'Relay backend configuration'
-  #   SUP olcDatabaseConfig
-  #   MAY (
-  #     olcRelay ) )
+  #    NAME 'olcRelayConfig'
+  #    DESC 'Relay backend configuration'
+  #    SUP olcDatabaseConfig
+  #    MAY (
+  #      olcRelay ) )
   relay: "olcRelayConfig"
 
   # ( OLcfgDbOc:7.1
@@ -201,3 +201,253 @@ slapd_backend_objectclass:
   #      olcSqlAutocommit $
   #      olcSqlIdQuery ) )
   sql: "olcSqlConfig"
+
+
+slapd_overlay_objectclass:
+
+  # ( OLcfgOvOc:4.1
+  #    NAME 'olcAccessLogConfig'
+  #    DESC 'Access log configuration'
+  #    SUP olcOverlayConfig
+  #    MUST olcAccessLogDB
+  #    MAY (
+  #      olcAccessLogOps $
+  #      olcAccessLogPurge $
+  #      olcAccessLogSuccess $
+  #      olcAccessLogOld $
+  #      olcAccessLogOldAttr
+  #      olcAccessLogBase ) )
+  accesslog: "olcAccessLogConfig"
+
+  # ( OLcfgOvOc:15.1
+  #    NAME 'olcAuditlogConfig'
+  #    DESC 'Auditlog configuration'
+  #    SUP olcOverlayConfig
+  #    MAY (
+  #      olcAuditlogFile ) )
+  auditlog: "olcAuditlogConfig"
+
+  # ( OLcfgCtOc:2.1
+  #    NAME 'olcAutoGroupConfig'
+  #    DESC 'Automatic groups configuration'
+  #    SUP olcOverlayConfig
+  #    MAY (
+  #      olcAutoGroupAttrSet
+  #      olcAutoGroupMemberOfAd ))
+  autogroup: "olcAutoGroupConfig"
+
+  # ( OLcfgOvOc:19.1
+  #    NAME 'olcCollectConfig'
+  #    DESC 'Collective Attribute configuration'
+  #    SUP olcOverlayConfig
+  #    MAY
+  #      olcCollectInfo )
+  collect: "olcCollectConfig"
+
+  # ( OLcfgOvOc:13.1
+  #    NAME 'olcConstraintConfig'
+  #    DESC 'Constraint overlay configuration'
+  #    SUP olcOverlayConfig
+  #    MAY (
+  #      olcConstraintAttribute ) )
+  constraint: "olcConstraintConfig"
+
+  # ( OLcfgOvOc:9.1
+  #    NAME 'olcDDSConfig'
+  #    DESC 'RFC2589 Dynamic directory services configuration'
+  #    SUP olcOverlayConfig
+  #    MAY (
+  #      olcDDSstate
+  #      olcDDSmaxTtl
+  #      olcDDSminTtl
+  #      olcDDSdefaultTtl
+  #      olcDDSinterval
+  #      olcDDStolerance
+  #      olcDDSmaxDynamicObjects  ) )
+  dds: "olcDDSConfig"
+
+  # ( OLcfgOvOc:17.1
+  #    NAME 'olcDynGroupConfig'
+  #    DESC 'Dynamic Group configuration'
+  #    SUP olcOverlayConfig
+  #    MAY
+  #      olcDynGroupAttrPair)
+  dyngroup: "olcDynGroupConfig"
+
+  # ( OLcfgOvOc:8.1
+  #    NAME 'olcDynListConfig'
+  #    DESC 'Dynamic list configuration'
+  #    SUP olcOverlayConfig
+  #    MAY
+  #      olcDynListAttrSet )
+  dynlist: "olcDynListConfig"
+
+  # ( OLcfgCtOc:8.1
+  #    NAME 'olcHomedirConfig'
+  #    DESC 'Homedir configuration'
+  #    SUP olcOverlayConfig
+  #    MAY (
+  #      olcSkeletonPath
+  #      olcMinimumUidNumber
+  #      olcHomedirRegexp
+  #      olcHomedirDeleteStyle
+  #      olcHomedirArchivePath ) )
+  homedir: "olcHomedirConfig"
+
+  # ( OLcfgCtOc:5.1
+  #    NAME 'olcLastBindConfig'
+  #    DESC 'Last Bind configuration'
+  #    SUP olcOverlayConfig
+  #    MAY (
+  #      olcLastBindPrecision
+  #      olcLastBindForwardUpdates) )
+  lastbind: "olcLastBindConfig"
+
+  # ( OLcfgOvOc:18.1
+  #    NAME 'olcMemberOfConfig'
+  #    DESC 'Member-of configuration'
+  #    SUP olcOverlayConfig
+  #    MAY (
+  #      olcMemberOfDN
+  #      olcMemberOfDangling
+  #      olcMemberOfDanglingError
+  #      olcMemberOfRefInt
+  #      olcMemberOfGroupOC
+  #      olcMemberOfMemberAD
+  #      olcMemberOfMemberOfAD ) )
+  memberof: "olcMemberOfConfig"
+
+  # ( OLcfgOvOc:2.1
+  #    NAME 'olcPcacheConfig'
+  #    DESC 'ProxyCache configuration'
+  #    SUP olcOverlayConfig
+  #    MUST (
+  #      olcPcache
+  #      olcPcacheAttrset
+  #      olcPcacheTemplate )
+  #    MAY (
+  #      olcPcachePosition
+  #      olcPcacheMaxQueries
+  #      olcPcachePersist
+  #      olcPcacheValidate
+  #      olcPcacheOffline
+  #      olcPcacheBind ) )
+  pcache: "olcPcacheConfig"
+
+  # ( OLcfgOvOc:12.1
+  #    NAME 'olcPPolicyConfig'
+  #    DESC 'Password Policy configuration'
+  #    SUP olcOverlayConfig
+  #    MAY (
+  #      olcPPolicyDefault
+  #      olcPPolicyHashCleartext
+  #      olcPPolicyUseLockout
+  #      olcPPolicyForwardUpdates
+  #      olcPPolicyDisableWrite
+  #      olcPPolicySendNetscapeControls ) )
+  ppolicy: "olcPPolicyConfig"
+
+  # ( OLcfgOvOc:11.1
+  #    NAME 'olcRefintConfig'
+  #    DESC 'Referential integrity configuration'
+  #    SUP olcOverlayConfig
+  #    MAY (
+  #      olcRefintAttribute
+  #      olcRefintNothing
+  #      olcRefintModifiersName ) )
+  refint: "olcRefintConfig"
+
+  # ( OLcfgOvOc:24.1
+  #    NAME 'olcRemoteAuthCfg'
+  #    DESC 'Remote Directory passthough authentication configuration'
+  #    SUP olcOverlayConfig
+  #    MUST
+  #      olcRemoteAuthTLS
+  #    MAY (
+  #      olcRemoteAuthMapping
+  #      olcRemoteAuthDNAttribute
+  #      olcRemoteAuthDomainAttribute
+  #      olcRemoteAuthDefaultDomain
+  #      olcRemoteAuthDefaultRealm
+  #      olcRemoteAuthStore
+  #      olcRemoteAuthRetryCount
+  #      olcRemoteAuthTLSPeerkeyHash ) )
+  remoteauth: "olcRemoteAuthCfg"
+
+  # ( OLcfgOvOc:20.1
+  #    NAME 'olcRetcodeConfig'
+  #    DESC 'Retcode configuration'
+  #    SUP olcOverlayConfig
+  #    MAY (
+  #      olcRetcodeParent
+  #      olcRetcodeItem
+  #      olcRetcodeInDir
+  #      olcRetcodeSleep ) )
+  retcode: "olcRetcodeConfig"
+
+  # ( OLcfgOvOc:16.1
+  #    NAME 'olcRwmConfig'
+  #    DESC 'Rewrite/remap configuration'
+  #    SUP olcOverlayConfig
+  #    MAY (
+  #      olcRwmRewrite
+  #      olcRwmTFSupport
+  #      olcRwmMap
+  #      olcRwmNormalizeMapped
+  #      olcRwmDropUnrequested) )
+  rwm: "olcRwmConfig"
+
+  # ( OLcfgOvOc:21.1
+  #    NAME 'olcSssVlvConfig'
+  #    DESC 'SSS VLV configuration'
+  #    SUP olcOverlayConfig
+  #    MAY (
+  #      olcSssVlvMax
+  #      olcSssVlvMaxKeys
+  #      olcSssVlvMaxPerConn ) )
+  sssvlv: "olcSssVlvConfig"
+
+  # ( OLcfgOvOc:1.1
+  #    NAME 'olcSyncProvConfig'
+  #    DESC 'SyncRepl Provider configuration'
+  #    SUP olcOverlayConfig
+  #    MAY (
+  #      olcSpCheckpoint
+  #      olcSpSessionlog
+  #      olcSpNoPresent
+  #      olcSpReloadHint
+  #      olcSpSessionlogSource ) )
+  syncprov: "olcSyncProvConfig"
+
+  # ( OLcfgOvOc:14.1
+  #    NAME 'olcTranslucentConfig'
+  #    DESC 'Translucent configuration'
+  #    SUP olcOverlayConfig
+  #    MAY (
+  #      olcTranslucentStrict
+  #      olcTranslucentNoGlue
+  #      olcTranslucentLocal
+  #      olcTranslucentRemote
+  #      olcTranslucentBindLocal
+  #      olcTranslucentPwModLocal ) )
+  translucent: "olcTranslucentConfig"
+
+  # ( OLcfgOvOc:10.1
+  #    NAME 'olcUniqueConfig'
+  #    DESC 'Attribute value uniqueness configuration'
+  #    SUP olcOverlayConfig
+  #    MAY (
+  #      olcUniqueBase
+  #      olcUniqueIgnore
+  #      olcUniqueAttribute
+  #      olcUniqueStrict
+  #      olcUniqueURI ) )
+  unique: "olcUniqueConfig"
+
+  # ( OLcfgOvOc:5.1
+  #    NAME 'olcValSortConfig'
+  #    DESC 'Value Sorting configuration'
+  #    SUP olcOverlayConfig
+  #    MUST
+  #      olcValSortAttr )
+  valsort: "olcValSortConfig"

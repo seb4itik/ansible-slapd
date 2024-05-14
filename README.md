@@ -2,6 +2,13 @@
 
 Best Ansible Role ;-) for installing and configuring OpenLDAP `slapd` with multiple backends.
 
+## Features
+
+- Multiple backends.
+- Modules management.
+- Schemas management.
+- Overlay management.
+- SSL activation.
 
 ## Requirements
 
@@ -52,7 +59,12 @@ and `olcDatabase={0}config,cn=config` that will always exist).
 Each entry in this array is a dictionary with two members:
 
 - `db_type`: type of backend;
+- `overlays`: overlays for this backend (optionnal), must have `name` and `attributes` attributes;
 - `attributes`: configuration attributes and values for this backend.
+
+Corresponding modules must be loaded for each `overlay` used (supported overlays are: `accesslog`, `auditlog`,
+`autogroup`, `collect`, `constraint`, `dds`, `dyngroup`, `dynlist`, `homedir`, `lastbind`, `memberof`, `pcache`,
+`ppolicy`, `refint`, `remoteauth`, `retcode`, `rwm`, `sssvlv`, `syncprov`, `translucent`, `unique`, `valsort`).
 
 Corresponding modules must be loaded for each `db_type` used:
 
@@ -86,6 +98,7 @@ Collection `community.general`.
     slapd_modules:
       - "back_ldap"
       - "back_mdb"
+      - "constraint"
     slapd_schemas:
       - "misc"
     slapd_config_olc:
@@ -98,6 +111,11 @@ Collection `community.general`.
           olcSuffix: "dc=another,dc=me"
           olcDbURI: "ldaps:///ldap1.another.me"
       - db_type: "mdb"
+        overlays:
+          - name: "constraint"
+            attributes:
+              olcConstraintAttribute:
+                - "mail regex ^[[:alnum:]]+@mydomain.com$"
         attributes:
           olcSuffix: "dc=test,dc=me"
           olcDbDirectory: "/var/lib/ldap-test-me"
@@ -147,15 +165,17 @@ you should prefix each item with `{N}`.
 - **DONE**: Add support for backends `asyncmeta`, `dnssrv`, `null`, `passwd`, and `sock`.
 - **BUG REPORTED**: Remove configuration attributes not in `slapd_config_olc`, `slapd_config_frontend`,
   `slapd_config_config`, and `slapd_config_backends[]` (but there is a bug in `community.general.ldap_attrs`,
-  [see](https://github.com/ansible-collections/community.general/issues/8354)). [^1]
+  [see](https://github.com/ansible-collections/community.general/issues/8354), see below for a workaround).
 - **NOT POSSIBLE**: Remove modules not in `slapd_modules`.
 - **NOT POSSIBLE**: Remove schemas not in `slapd_schemas`.
+- **DONE**: Add support for overlays.
 - Write tests (but problem between *Docker* and *systemd*).
 - Validate other platforms (Ubuntu, Redhat, ...).
-- Add support for overlays.
 - Add support for monitor backend.
 
-[^1]: Workaround for removing an attribute, use `[]`:
+
+Workaround for removing an attribute: use `[]`. Exemple:
+
 ```
     slapd_config_olc:
       olcLogLevel: []

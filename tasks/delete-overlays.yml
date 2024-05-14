@@ -1,0 +1,30 @@
+- name: Search for suffix {{ suffix }}
+  community.general.ldap_search:
+    dn: "cn=config"
+    filter: "(&(objectClass=olcDatabaseConfig)(olcSuffix={{ suffix }}))"
+    scope: "children"
+    attrs: ["dn"]
+  register: out_suffix
+
+- name: Find all overlay {{ suffix }}
+  community.general.ldap_search:
+    dn: "{{ out_suffix.results[0].dn }}"
+    filter: "(olcOverlay=*)"
+    scope: "children"
+    attrs: ["olcOverlay"]
+  ignore_errors: true
+  register: out_overlays
+
+- name: Build overlays list
+  ansible.builtin.set_fact:
+    existing_overlays: "{{ out_overlays | json_query('results[].olcOverlay') | map('regex_replace', '^\\{[0-9]+\\}(.*)$', '\\1') | list }}"
+
+- name: Delete overlay
+  loop: "{{ existing_overlays }}"
+  loop_control:
+    loop_var: tmp
+    index_var: idx
+  when: "tmp not in wanted_overlays"
+  community.general.ldap_entry:
+    dn: "{{ out_overlays.results[idx].dn }}"
+    state: "absent"
