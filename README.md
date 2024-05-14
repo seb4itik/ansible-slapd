@@ -56,11 +56,16 @@ Each entry in this array is a dictionary with two members:
 
 Corresponding modules must be loaded for each `db_type` used:
 
+- `asyncmeta`: module `back_asyncmeta`;
+- `dnssrv`: module `back_dnssrv`;
 - `ldap`: module `back_ldap`;
 - `mdb`: module `back_mdb`;
-- `meta`: module `back_meta`; 
+- `meta`: module `back_meta`;
+- `null`: module `back_null`;
+- `passwd`: module `back_passwd`;
 - `perl`: module `back_perl`;
 - `relay`: module `back_relay`;
+- `sock`: module `back_sock`;
 - `sql`: module `back_sql`.
 
 *Note: Only these backend types have been tested: `ldap`, `mdb`.*
@@ -138,10 +143,10 @@ you should prefix each item with `{N}`.
 
 ## TODO
 
-- Manage role versions in *Ansible Galaxy*.
+- **DONE**: Manage role versions in *Ansible Galaxy*.
+- **DONE**: Add support for backends `asyncmeta`, `dnssrv`, `null`, `passwd`, and `sock`.
 - Write tests (but problem between *Docker* and *systemd*).
 - Validate other platforms (Ubuntu, Redhat, ...).
-- Add support for backends `asyncmeta`, `dnssrv`, `null`, `passwd`, and `sock`.
 - Add support for overlays.
 - Add support for monitor backend.
 - Remove modules not in `slapd_modules`.

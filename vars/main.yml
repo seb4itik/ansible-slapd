@@ -1,6 +1,36 @@
 ---
 slapd_backend_objectclass:
 
+  # ( OLcfgDbOc:3.4
+  #    NAME 'olcAsyncMetaConfig'
+  #    DESC 'Asyncmeta backend configuration'
+  #    SUP olcDatabaseConfig
+  #    MAY (
+  #      olcDbDnCacheTtl $
+  #      olcDbIdleTimeout $
+  #      olcDbOnErr $
+  #      olcDbPseudoRootBindDefer $
+  #      olcDbConnectionPoolMax $
+  #      olcDbMaxTimeoutOps $
+  #      olcDbMaxPendingOps $
+  #      olcDbMaxTargetConns $
+  #      olcDbBindTimeout $
+  #      olcDbCancel $
+  #      olcDbChaseReferrals $
+  #      olcDbClientPr $
+  #      olcDbDefaultTarget $
+  #      olcDbNetworkTimeout $
+  #      olcDbNoRefs $
+  #      olcDbNoUndefFilter $
+  #      olcDbNretries $
+  #      olcDbProtocolVersion $
+  #      olcDbQuarantine $
+  #      olcDbRebindAsUser $
+  #      olcDbSessionTrackingRequest $
+  #      olcDbStartTLS $
+  #      olcDbTFSupport ) )
+  asyncmeta: "olcAsyncMetaConfig"
+
   # ( OLcfgDbOc:3.1
   #    NAME 'olcLDAPConfig'
   #    DESC 'LDAP backend configuration'
@@ -32,6 +62,9 @@ slapd_backend_objectclass:
   #      $ olcDbOnErr
   #      $ olcDbKeepalive ) )
   ldap: "olcLDAPConfig"
+
+  # No specific config.
+  dnssrv: "olcDatabaseConfig"
 
   # ( OLcfgDbOc:12.1
   #    NAME 'olcMdbConfig'
@@ -83,6 +116,23 @@ slapd_backend_objectclass:
   #       olcDbTFSupport ) )
   meta: "olcMetaConfig"
 
+  # ( OLcfgDbOc:8.1
+  #    NAME 'olcNullConfig'
+  #    DESC 'Null backend configuration'
+  #    SUP olcDatabaseConfig
+  #    MAY (
+  #      olcDbBindAllowed $
+  #      olcDbDoSearch ) )
+  null: "olcNullConfig"
+
+  # ( OLcfgDbOc:9.1
+  #    NAME 'olcPasswdConfig'
+  #    DESC 'Passwd backend configuration'
+  #    SUP olcDatabaseConfig
+  #    MAY
+  #      olcPasswdFile )
+  passwd: "olcPasswdConfig"
+
   # ( OLcfgDbOc:11.1
   #    NAME 'olcDbPerlConfig'
   #    DESC 'Perl DB configuration'
@@ -102,6 +152,16 @@ slapd_backend_objectclass:
   #   MAY (
   #     olcRelay ) )
   relay: "olcRelayConfig"
+
+  # ( OLcfgDbOc:7.1
+  #    NAME 'olcDbSocketConfig'
+  #    DESC 'Socket backend configuration'
+  #    SUP olcDatabaseConfig
+  #    MUST
+  #      olcDbSocketPath
+  #    MAY
+  #      olcDbSocketExtensions )
+  sock: "olcDbSocketConfig"
 
   # ( OLcfgDbOc:6.1
   #    NAME 'olcSqlConfig'
