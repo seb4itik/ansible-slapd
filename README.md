@@ -96,9 +96,10 @@ Collection `community.general`.
 
 ## Notes
 
-This role will *not* create the root entry for a database.
+This role will *not* create the root DN entry for backends.
 
-For adding the schema `my-schema`, the file `schema.ldif` or `schame.schema`
+For adding the schema `my-schema`, the file `my-schema.ldif` or `my-schema.schema` must exist
+in `/etc/ldap/schema` (or whatever `{{slapd_schema_path}}` is).
 
 Due to OpenLDAP `slapd` limitations, it's not possible to dynamically remove modules and
 schemas. So, even if you remove a module from `slapd_modules` or a schema from `slapd_schemas`,
