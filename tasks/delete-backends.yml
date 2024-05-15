@@ -20,3 +20,24 @@
   ansible.builtin.file:
     path: "{{ item.olcDbDirectory }}"
     state: "absent"
+
+- name: Stat apparmor file
+  ansible.builtin.stat:
+    path: "{{ slapd_apparmor_file }}"
+  register: out_apparmor_file
+
+- name: Configure apparmor - directory {{ item.olcDbDirectory }}
+  loop: "{{ out_existing_suffixes.results }}"
+  when: "item.olcSuffix not in wanted_suffixes and out_apparmor_file.stat.exists"
+  ansible.builtin.lineinfile:
+    path: "{{ slapd_apparmor_file }}"
+    regexp: "{{ item.olcDbDirectory }}\\/\\s+r,"
+    state: "absent"
+
+- name: Configure apparmor - content for directory {{ item.olcDbDirectory }}
+  loop: "{{ out_existing_suffixes.results }}"
+  when: "item.olcSuffix not in wanted_suffixes and out_apparmor_file.stat.exists"
+  ansible.builtin.lineinfile:
+    path: "{{ slapd_apparmor_file }}"
+    regexp: "{{ item.olcDbDirectory }}\\/\\*\\*\\s+rwk,"
+    state: "absent"

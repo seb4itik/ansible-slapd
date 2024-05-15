@@ -17,13 +17,21 @@
   when: "slapd_ssl"
   notify: Restart slapd
   block:
-    - name: Configure slapd services with slaps:///
-      ansible.builtin.lineinfile:
-        path: "/etc/default/slapd"
-        regexp: "^SLAPD_SERVICES="
-        line: 'SLAPD_SERVICES="ldap:/// ldaps:/// ldapi:///"'
     - name: Add slapd user to SSL group
       when: "slapd_ssl"
       ansible.builtin.user:
         user: "{{ slapd_user }}"
         groups: ["{{ slapd_ssl_group }}"]
+      register: out_slapd_ssl_group
+    - name: Restart slapd to activate SSL group
+      # We need to restart slapd now to activate group membership:
+      # noqa: no-handler
+      when: "out_slapd_ssl_group.changed"
+      ansible.builtin.service:
+        name: "slapd"
+        state: "restarted"
+    - name: Configure slapd services with slaps:///
+      ansible.builtin.lineinfile:
+        path: "/etc/default/slapd"
+        regexp: "^SLAPD_SERVICES="
+        line: 'SLAPD_SERVICES="ldap:/// ldaps:/// ldapi:///"'

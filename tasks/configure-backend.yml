@@ -1,11 +1,43 @@
 - name: Create directory {{ suffix }}
   when: "'olcDbDirectory' in attributes"
-  ansible.builtin.file:
-    path: "{{ attributes.olcDbDirectory }}"
-    state: "directory"
-    owner: "{{ slapd_user }}"
-    group: "{{ slapd_group }}"
-    mode: "0750"
+  block:
+    - name: Create directory {{ attributes.olcDbDirectory }}
+      ansible.builtin.file:
+        path: "{{ attributes.olcDbDirectory }}"
+        state: "directory"
+        owner: "{{ slapd_user }}"
+        group: "{{ slapd_group }}"
+        mode: "0750"
+    - name: Stat apparmor file
+      ansible.builtin.stat:
+        path: "{{ slapd_apparmor_file }}"
+      register: out_apparmor_file
+    - name: Configure apparmor
+      when: "out_apparmor_file.stat.exists"
+      block:
+        - name: Configure apparmor - directory {{ attributes.olcDbDirectory }}
+          ansible.builtin.lineinfile:
+            path: "{{ slapd_apparmor_file }}"
+            regexp: "{{ attributes.olcDbDirectory }}\\/\\s+r,"
+            line: "  {{ attributes.olcDbDirectory }}/ r,"
+            state: "present"
+            insertbefore: "^\\s*\\}\\s*$"
+          register: out_apparmor1
+        - name: Configure apparmor - content for directory {{ attributes.olcDbDirectory }}
+          ansible.builtin.lineinfile:
+            path: "{{ slapd_apparmor_file }}"
+            regexp: "{{ attributes.olcDbDirectory }}\\/\\*\\*\\s+rwk,"
+            line: "  {{ attributes.olcDbDirectory }}/** rwk,"
+            state: "present"
+            insertbefore: "^\\s*\\}\\s*$"
+          register: out_apparmor2
+        - name: Reload apparmor
+          # We need to reload apparmor now to activate changed profile:
+          # noqa: no-handler
+          when: "out_apparmor1.changed or out_apparmor2.changed"
+          ansible.builtin.service:
+            name: "apparmor"
+            state: "reloaded"
 
 # Find suffix
 - name: Search for suffix {{ suffix }}

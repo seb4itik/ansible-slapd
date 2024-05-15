@@ -9,7 +9,10 @@ The best Ansible Role ;-) for installing and configuring OpenLDAP `slapd` with m
 - Schemas management.
 - Overlay management.
 - SSL activation.
+- Apparmor aware (for Ubuntu).
+- Debian and Ubuntu friendly (anyone for Redhat likes and other platforms?).
 - A developer/maintainer willing to receive feedback and bug reports.
+
 
 ## Requirements
 
@@ -35,6 +38,7 @@ but will **not** `become` by itself.
 | `slapd_module_path`     | `"/usr/lib/ldap"`    | Path to the directory of modules.                                                     |
 | `slapd_schemas`         | `[]`                 | List of schemas to add (`.ldiff` or `.schema` format).                                |
 | `slapd_schema_path`     | `"/etc/ldap/schema"` | Path to the directory of schemas.                                                     |
+| `slapd_apparmor_file`   | `"/etc/apparmor.d/usr.sbin.slapd"`| Path to `slapd` apparmor profile file.                                   |
 | `slapd_config_olc`      | `{}`                 | Any parameter recognized by `slapd` in `cn=config`.                                   |
 | `slapd_config_frontend` | `{}`                 | Any parameter recognized by `slapd` in `olcDatabase={-1}frontend,cn=config`.          |
 | `slapd_config_config`   | `{}`                 | Any parameter recognized by `slapd` in `olcDatabase={0}config,cn=config`.             |
@@ -209,7 +213,7 @@ you should prefix each item with `{N}`.
 ## TODO
 
 - Write tests (but problem between *Docker* and *systemd*).
-- Validate other platforms (Ubuntu, Redhat, ...).
+- Other platforms (Redhat, ...).
 - Add support for monitor backend.
 
 
