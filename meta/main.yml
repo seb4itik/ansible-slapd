@@ -3,7 +3,9 @@ galaxy_info:
   namespace: "seb4itik"
 
   author: "Sébastien Namèche"
-  description: "Configure an OpenLDAP slapd instance"
+  description: "Configure an OpenLDAP slapd instance with multiple backends
+    (modules, schemas, overlays, and SSL management).
+
   company: "iTik"
 
   license: "MIT"
