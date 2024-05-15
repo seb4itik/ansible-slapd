@@ -1,6 +1,6 @@
 # Ansible role slapd
 
-Best Ansible Role ;-) for installing and configuring OpenLDAP `slapd` with multiple backends.
+The best Ansible Role ;-) for installing and configuring OpenLDAP `slapd` with multiple backends.
 
 ## Features
 
@@ -9,16 +9,18 @@ Best Ansible Role ;-) for installing and configuring OpenLDAP `slapd` with multi
 - Schemas management.
 - Overlay management.
 - SSL activation.
+- A developer/maintainer willing to receive feedback and bug reports.
 
 ## Requirements
 
-`community.general.json_query` needs `jmespath`.
+`community.general.json_query` needs `jmespath`:
 
 ```
 pip3 install jmespath
 ```
 
-This role must be run as `root` but it will **not** `become` by itself.
+This role must be run as `root` (for `EXTERNAL` authentification mechanism)
+but will **not** `become` by itself.
 
 
 ## Role Variables
@@ -31,7 +33,7 @@ This role must be run as `root` but it will **not** `become` by itself.
 | `slapd_ssl_group`       | `"ssl-cert"`         | Group `slapd` will be added to if `slapd_ssl` (to access keys in `/etc/ssl/private`). |
 | `slapd_modules`         | `[]`                 | List of modules to add.                                                               |
 | `slapd_module_path`     | `"/usr/lib/ldap"`    | Path to the directory of modules.                                                     |
-| `slapd_schemas`         | `[]`                 | List of schemas to add (.ldiff or .schema format).                                    |
+| `slapd_schemas`         | `[]`                 | List of schemas to add (`.ldiff` or `.schema` format).                                |
 | `slapd_schema_path`     | `"/etc/ldap/schema"` | Path to the directory of schemas.                                                     |
 | `slapd_config_olc`      | `{}`                 | Any parameter recognized by `slapd` in `cn=config`.                                   |
 | `slapd_config_frontend` | `{}`                 | Any parameter recognized by `slapd` in `olcDatabase={-1}frontend,cn=config`.          |
@@ -56,10 +58,10 @@ At least, these parameters must be set in `slapd_config_olc`:
 `slapd_config_backends` is the list of backends to be in `slapd` configuration (except `olcDatabase={-1}frontend,cn=config`
 and `olcDatabase={0}config,cn=config` that will always exist).
 
-Each entry in this array is a dictionary with two members:
+Each entry in this array is a dictionary with two or three members:
 
 - `db_type`: type of backend;
-- `overlays`: overlays for this backend (optionnal), must have `name` and `attributes` attributes;
+- `overlays`: overlays for this backend (optional), must have `name` and `attributes` attributes;
 - `attributes`: configuration attributes and values for this backend.
 
 Corresponding modules must be loaded for each `overlay` used (supported overlays are: `accesslog`, `auditlog`,
@@ -88,10 +90,55 @@ Corresponding modules must be loaded for each `db_type` used:
 Collection `community.general`.
 
 
-## Example Playbook
+## Notes
+
+This role will *not* create the root entry for a database.
+
+For adding the schema `my-schema`, the file `schema.ldif` or `schame.schema`
+
+Due to OpenLDAP `slapd` limitations, it's not possible to dynamically remove modules and
+schemas. So, even if you remove a module from `slapd_modules` or a schema from `slapd_schemas`,
+this role will not try to remove them from the `slapd` configuration.
+
+Removing configuration attributes from `slapd_config_olc`, `slapd_config_frontend`,
+`slapd_config_config`, `slapd_config_backends[*].attributes`, and
+`slapd_config_backends[*].overlays.attributes` will not remove them from `slapd`configuration.
+See [this bug report](https://github.com/ansible-collections/community.general/issues/8354)
+for `community.general.ldap_attrs`
+
+The workaround for removing an attribute is to use `[]`. Exemple:
 
 ```
-- name: Test role slapd
+    slapd_config_olc:
+      olcLogLevel: []
+```
+
+
+## Example Playbooks
+
+Minimal playbook:
+
+```
+- name: Minimal playbook for role seb4itik.slapd
+  hosts: ldap
+  vars:
+    slapd_modules:
+      - "back_mdb"
+    slapd_config_backends:
+      - db_type: "mdb"
+        attributes:
+          olcSuffix: "dc=test,dc=me"
+          olcDbDirectory: "/var/lib/ldap-test-me"
+          olcRootDN: "cn=admin,dc=test,dc=me"
+          olcRootPW: "{{ vault.ldap.admin_dn_password }}"
+  roles:
+    - "seb4itik.slapd"
+```
+
+More complete example:
+
+```
+- name: Example playbook for role seb4itik.slapd
   hosts: ldap
   vars:
     slapd_ssl: true
@@ -161,25 +208,9 @@ you should prefix each item with `{N}`.
 
 ## TODO
 
-- **DONE**: Manage role versions in *Ansible Galaxy*.
-- **DONE**: Add support for backends `asyncmeta`, `dnssrv`, `null`, `passwd`, and `sock`.
-- **BUG REPORTED**: Remove configuration attributes not in `slapd_config_olc`, `slapd_config_frontend`,
-  `slapd_config_config`, and `slapd_config_backends[]` (but there is a bug in `community.general.ldap_attrs`,
-  [see](https://github.com/ansible-collections/community.general/issues/8354), see below for a workaround).
-- **NOT POSSIBLE**: Remove modules not in `slapd_modules`.
-- **NOT POSSIBLE**: Remove schemas not in `slapd_schemas`.
-- **DONE**: Add support for overlays.
 - Write tests (but problem between *Docker* and *systemd*).
 - Validate other platforms (Ubuntu, Redhat, ...).
 - Add support for monitor backend.
-
-
-Workaround for removing an attribute: use `[]`. Exemple:
-
-```
-    slapd_config_olc:
-      olcLogLevel: []
-```
 
 
 ## License
