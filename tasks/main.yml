@@ -47,6 +47,11 @@
     attributes: "{{ slapd_config_config }}"
     state: "exact"
 
+- name: Delete backends
+  vars:
+    wanted_suffixes: "{{ slapd_config_backends | map(attribute='attributes.olcSuffix') }}"
+  ansible.builtin.include_tasks: "delete-backends.yml"
+
 - name: Backends creation/configuration
   loop: "{{ slapd_config_backends }}"
   vars:
@@ -55,10 +60,12 @@
     attributes: "{{ item.attributes }}"
   ansible.builtin.include_tasks: "configure-backend.yml"
 
-- name: Delete backends
+- name: Delete overlays
+  loop: "{{ slapd_config_backends }}"
   vars:
-    wanted_suffixes: "{{ slapd_config_backends | map(attribute='attributes.olcSuffix') }}"
-  ansible.builtin.include_tasks: "delete-backends.yml"
+    suffix: "{{ item.attributes.olcSuffix }}"
+    wanted_overlays: "{{ item.overlays | default([]) | map(attribute='name') }}"
+  ansible.builtin.include_tasks: "delete-overlays.yml"
 
 - name: Overlays creation/configuration
   loop: "{{ slapd_config_backends | subelements('overlays', skip_missing='True') }}"
@@ -66,10 +73,3 @@
     suffix: "{{ item.0.attributes.olcSuffix }}"
     overlay: "{{ item.1 }}"
   ansible.builtin.include_tasks: "configure-overlay.yml"
-
-- name: Delete overlays
-  loop: "{{ slapd_config_backends }}"
-  vars:
-    suffix: "{{ item.attributes.olcSuffix }}"
-    wanted_overlays: "{{ item.overlays | default([]) | map(attribute='name') }}"
-  ansible.builtin.include_tasks: "delete-overlays.yml"
