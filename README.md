@@ -9,6 +9,7 @@ The best Ansible Role ;-) for installing and configuring OpenLDAP `slapd` with m
 - Schemas management.
 - Overlay management.
 - SSL activation.
+- Monitor backend activation.
 - Apparmor aware (for Ubuntu).
 - Debian and Ubuntu friendly (anyone for Redhat likes and other platforms?).
 - A developer/maintainer willing to receive feedback and bug reports.
@@ -34,6 +35,8 @@ but will **not** `become` by itself.
 | `slapd_group`           | `"{{ slapd_user }}"` | Group user for `slapd`.                                                               |
 | `slapd_ssl`             | `false`              | Activate SSL (`ldaps:///`).                                                           |
 | `slapd_ssl_group`       | `"ssl-cert"`         | Group `slapd` will be added to if `slapd_ssl` (to access keys in `/etc/ssl/private`). |
+| `slapd_monitor`         | `false`              | Activate monitor backend (`cn=Monitor`).                                              |
+| `slapd_monitor_admin`   | required if `slapd_monitor` | DN that will have read access to `cn=Monitor`.                                 |
 | `slapd_modules`         | `[]`                 | List of modules to add.                                                               |
 | `slapd_module_path`     | `"/usr/lib/ldap"`    | Path to the directory of modules.                                                     |
 | `slapd_schemas`         | `[]`                 | List of schemas to add (`.ldiff` or `.schema` format).                                |
@@ -147,6 +150,8 @@ More complete example:
   hosts: ldap
   vars:
     slapd_ssl: true
+    slapd_monitor: true
+    slapd_monitor_admin: "gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth"
     slapd_modules:
       - "back_ldap"
       - "back_mdb"
@@ -215,7 +220,6 @@ you should prefix each item with `{N}`.
 
 - Write tests (but problem between *Docker* and *systemd*).
 - Other platforms (Redhat, ...).
-- Add support for monitor backend.
 
 
 ## License

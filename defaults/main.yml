@@ -5,6 +5,8 @@ slapd_group: "{{ slapd_user }}"
 slapd_ssl: false
 slapd_ssl_group: "ssl-cert"
 
+slapd_monitor: false
+
 slapd_modules: []
 slapd_module_path: "/usr/lib/ldap"
 
