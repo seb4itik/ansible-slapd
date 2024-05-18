@@ -7,11 +7,18 @@
         path: "/etc/default/slapd"
         regexp: "^SLAPD_SERVICES="
         line: 'SLAPD_SERVICES="ldap:/// ldapi:///"'
+    - name: Get info from group {{ slapd_ssl_group }}
+      ansible.builtin.getent:
+        database: "group"
+        key: "{{ slapd_ssl_group }}"
+      register: out_ssl_group
+    - name: Get list members of group {{ slapd_ssl_group }}
+      ansible.builtin.set_fact:
+        slapd_ssl_group_members: "{{ out_ssl_group.ansible_facts.getent_group[slapd_ssl_group][2] | split(',') }}"
     - name: Remove slapd user from SSL group
-      when: "not slapd_ssl"
-      ansible.builtin.user:
-        user: "{{ slapd_user }}"
-        groups: []
+      # noqa: no-changed-when
+      when: "slapd_user in slapd_ssl_group_members"
+      ansible.builtin.command: "/usr/sbin/delgroup {{ slapd_user }} {{ slapd_ssl_group }}"
 
 - name: Activate SSL
   when: "slapd_ssl"
@@ -22,6 +29,7 @@
       ansible.builtin.user:
         user: "{{ slapd_user }}"
         groups: ["{{ slapd_ssl_group }}"]
+        append: true
       register: out_slapd_ssl_group
     - name: Restart slapd to activate SSL group
       # We need to restart slapd now to activate group membership:

@@ -4,6 +4,7 @@ The best Ansible Role ;-) for installing and configuring OpenLDAP `slapd` with m
 
 ## Features
 
+- Idempotent (but see (Notes)[#notes]).
 - Multiple backends.
 - Modules management.
 - Schemas management.
