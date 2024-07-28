@@ -1,0 +1,16 @@
+- name: Enable/disable monitor backend
+  community.general.ldap_entry:
+    dn: "olcDatabase=Monitor,cn=config"
+    objectClass: "olcMonitorConfig"
+    attributes:
+      olcDatabase: "Monitor"
+    state: "{{ slapd_monitor | ternary('present', 'absent') }}"
+
+# Because community.general.ldap_entry doesn't update existing LDAP records.
+- name: Configure monitor backend
+  when: "slapd_monitor"
+  community.general.ldap_attrs:
+    dn: "olcDatabase=Monitor,cn=config"
+    attributes:
+      olcAccess: '{0}to dn.subtree="cn=Monitor" by dn.base="{{ slapd_monitor_admin | mandatory }}" read by * none'
+    state: "exact"

@@ -221,7 +221,8 @@ you should prefix each item with `{N}`.
 
 - Write tests (but problem between *Docker* and *systemd*).
 - Other platforms (Redhat, ...).
-
+- Optimisation: set_fact (all modules, all schemas, all suffixes...)
+- Idempotency in attributes (for replacing "state: exact")
 
 ## License
 

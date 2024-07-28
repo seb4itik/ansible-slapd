@@ -1,27 +1,12 @@
 ---
-- name: Install pre-required packages
-  ansible.builtin.apt:
-    name:
-      - "debconf-utils"
-      - "ssl-cert"
-
-# This backend will be deleted by "Delete backends" task
-- name: Pre-configure slapd dummy.domain.to.delete with debconf
-  ansible.builtin.debconf:
-    name: "slapd"
-    question: "slapd/domain"
-    value: "dummy.domain.to.delete"
-    vtype: "string"
-
-- name: Install required packages
-  ansible.builtin.apt:
-    name:
-      - "slapd"
-      - "schema2ldif"
-      - "python3-ldap"
+- name: Install slapd
+  ansible.builtin.include_tasks: "install-slapd.yml"
 
 - name: Configure SSL
   ansible.builtin.include_tasks: "configure-ssl.yml"
+
+- name: Configure monitor backend
+  ansible.builtin.include_tasks: "configure-monitor.yml"
 
 - name: Add schemas
   ansible.builtin.include_tasks: "add-schemas.yml"
@@ -29,24 +14,7 @@
 - name: Add modules
   ansible.builtin.include_tasks: "add-modules.yml"
 
-- name: Enable/disable monitor backend
-  community.general.ldap_entry:
-    dn: "olcDatabase=Monitor,cn=config"
-    objectClass: "olcMonitorConfig"
-    attributes:
-      olcDatabase: "Monitor"
-    state: "{{ slapd_monitor | ternary('present', 'absent') }}"
-
-# Because community.general.ldap_entry doesn't update existing LDAP records.
-- name: Configure monitor backend
-  when: "slapd_monitor"
-  community.general.ldap_attrs:
-    dn: "olcDatabase=Monitor,cn=config"
-    attributes:
-      olcAccess: '{0}to dn.subtree="cn=Monitor" by dn.base="{{ slapd_monitor_admin | mandatory }}" read by * none'
-    state: "exact"
-
-- name: Root OLC configuration
+- name: Configuration - Root OLC
   community.general.ldap_attrs:
     dn: "cn=config"
     attributes: "{{ slapd_config_olc }}"

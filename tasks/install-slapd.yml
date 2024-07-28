@@ -1,0 +1,20 @@
+- name: Install pre-required packages
+  ansible.builtin.apt:
+    name:
+      - "debconf-utils"
+      - "ssl-cert"
+
+# This backend will be deleted by "Delete backends" task
+- name: Pre-configure slapd dummy.domain.to.delete with debconf
+  ansible.builtin.debconf:
+    name: "slapd"
+    question: "slapd/domain"
+    value: "dummy.domain.to.delete"
+    vtype: "string"
+
+- name: Install required packages
+  ansible.builtin.apt:
+    name:
+      - "slapd"
+      - "schema2ldif"
+      - "python3-ldap"
