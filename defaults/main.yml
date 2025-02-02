@@ -7,8 +7,9 @@ slapd_ssl_group: "ssl-cert"
 
 slapd_monitor: false
 
-slapd_modules: []
 slapd_module_path: "/usr/lib/ldap"
+slapd_modules:
+  - "back_mdb"
 
 slapd_schemas: []
 slapd_schema_path: "/etc/ldap/schema"
@@ -18,4 +19,19 @@ slapd_apparmor_file: "/etc/apparmor.d/usr.sbin.slapd"
 slapd_config_olc: {}
 slapd_config_frontend: {} # -1
 slapd_config_config: {}   # 0
-slapd_config_backends: [] # 1..
+slapd_config_backends:    # 1..
+  - db_type: "mdb"
+    attributes:
+      olcSuffix: "o=Test Me,c=FR"
+      olcDbDirectory: "/var/lib/ldap-test-me"
+      olcRootDN: "cn=admin,o=Test Me,c=FR"
+      olcRootPW: "abc123"
+    dit:
+      root_record:
+        objectClass:
+          - "organization"
+        attributes:
+          o: "Test Me"
+      organizational_units:
+        - "People"
+        - "Group"

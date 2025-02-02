@@ -43,6 +43,7 @@
     suffix: "{{ item.attributes.olcSuffix | mandatory }}"
     db_type: "{{ item.db_type | mandatory }}"
     attributes: "{{ item.attributes }}"
+    dit: "{{ item.dit | default({}) }}"
   ansible.builtin.include_tasks: "configure-backend.yml"
 
 - name: Delete overlays

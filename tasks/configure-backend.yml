@@ -64,3 +64,24 @@
     dn: "{{ out_suffix.results[0].dn }}"
     attributes: "{{ attributes }}"
     state: "exact"
+
+- name: Create directory information tree
+  when: "'root_record' in dit"
+  block:
+
+    - name: Create base DN
+      community.general.ldap_entry:
+        dn: "{{ suffix }}"
+        objectClass: "{{ dit.root_record.objectClass }}"
+        attributes: "{{ dit.root_record.attributes }}"
+
+    - name: Create organizational units
+      when: "'organizational_units' in dit"
+      loop: "{{ dit.organizational_units | default([]) }}"
+      loop_control:
+        loop_var: "ou"
+      community.general.ldap_entry:
+        dn: "ou={{ ou }},{{ suffix }}"
+        objectClass: "organizationalUnit"
+        attributes:
+          ou: "{{ ou }}"

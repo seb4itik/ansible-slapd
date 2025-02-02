@@ -66,15 +66,13 @@ At least, these parameters must be set in `slapd_config_olc`:
 `slapd_config_backends` is the list of backends to be in `slapd` configuration (except `olcDatabase={-1}frontend,cn=config`
 and `olcDatabase={0}config,cn=config` that will always exist).
 
-Each entry in this array is a dictionary with two or three members:
+Each entry in this array is a dictionary with two to four members:
 
 - `db_type`: type of backend;
 - `overlays`: overlays for this backend (optional), must have `name` and `attributes` attributes;
-- `attributes`: configuration attributes and values for this backend.
-
-Corresponding modules must be loaded for each `overlay` used (supported overlays are: `accesslog`, `auditlog`,
-`autogroup`, `collect`, `constraint`, `dds`, `dyngroup`, `dynlist`, `homedir`, `lastbind`, `memberof`, `pcache`,
-`ppolicy`, `refint`, `remoteauth`, `retcode`, `rwm`, `sssvlv`, `syncprov`, `translucent`, `unique`, `valsort`).
+- `dit`: information for tree initialization, if present a root DN and optional organizational units will be created;
+- `attributes`: configuration attributes and values for this backend, at least `olcSuffix` attribute is mandatory,
+  others may be required depending of the type of backend.
 
 Corresponding modules must be loaded for each `db_type` used:
 
@@ -92,6 +90,35 @@ Corresponding modules must be loaded for each `db_type` used:
 
 *Note: Only these backend types have been tested: `ldap`, `mdb`.*
 
+Corresponding modules must be loaded for each `overlay` used (supported overlays are: `accesslog`, `auditlog`,
+`autogroup`, `collect`, `constraint`, `dds`, `dyngroup`, `dynlist`, `homedir`, `lastbind`, `memberof`, `pcache`,
+`ppolicy`, `refint`, `remoteauth`, `retcode`, `rwm`, `sssvlv`, `syncprov`, `translucent`, `unique`, `valsort`).
+
+If `dit` is there for a backend, it should be a dictionnary with a `root` mandatory key and
+an optional `organizational_units` key. `root` is also a dictionnary with mandatories `objectClass`
+(list of strings) and `attributes` keys (dictionnary). `organizational_units` is a list of strings
+containing the names for the organizational units to be created directly under the root record.
+The root DN will be `attributes.olcSuffix` which is mandatory.
+
+Example:
+
+```
+slapd_config_backends:
+  - db_type: "mdb"
+    attributes:
+      olcSuffix: "o=Test Me,c=FR"
+      olcDbDirectory: "/var/lib/ldap-test-me"
+    dit:
+      root_record:
+        objectClass:
+          - "organization"
+        attributes:
+          o: "Test Me"
+      organizational_units:
+        - "People"
+        - "Group"
+```
+
 
 ## Dependencies
 
@@ -99,8 +126,6 @@ Collection `community.general`.
 
 
 ## Notes
-
-This role will *not* create the root DN entry for backends.
 
 For adding the schema `my-schema`, the file `my-schema.ldif` or `my-schema.schema` must exist
 in `/etc/ldap/schema` (or whatever `{{slapd_schema_path}}` is).
