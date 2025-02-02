@@ -1,0 +1,4 @@
+users:
+  - name: ubuntu
+    ssh_authorized_keys:
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKSUkNrg36dekQOETk4UGqFZCRrdsqxR8ryLu5O3g7Ei root@tests"

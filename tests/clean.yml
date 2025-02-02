@@ -1,0 +1,6 @@
+- name: Destroy Multipass VM
+  loop: "{{ test_host_names }}"
+  theko2fi.multipass.multipass_vm:
+    name: "{{ item }}"
+    state: "absent"
+    purge: true

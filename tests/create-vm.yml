@@ -1,0 +1,19 @@
+- name: Create host {{ item }}
+  theko2fi.multipass.multipass_vm:
+    name: "{{ item }}"
+    image: "24.04"
+    cloud_init: "cloud-init.yml"
+    cpus: 2
+    memory: "2g"
+    disk: "8g"
+    state: "started"
+  register: vm
+
+- name: Add host to inventory
+  ansible.builtin.add_host:
+    name: "{{ item }}"
+    groups: "ldap"
+    ansible_host: "{{ vm.result.info[item].ipv4[0] }}"
+    ansible_python_interpreter: "/usr/bin/python3"
+    # This doesn't work (yet?).
+    # ansible_connection: "theko2fi.multipass.multipass"

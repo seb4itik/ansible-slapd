@@ -1,0 +1,25 @@
+- name: Prepare
+  hosts: localhost
+  vars:
+    test_host_names:
+      - "slapd-test-1"
+  tasks:
+    - name: Clean
+      ansible.builtin.include_tasks: "clean.yml"
+    - name: Prepare
+      ansible.builtin.include_tasks: "prepare.yml"
+
+- name: Test 01 - Test
+  hosts: ldap
+  become: true
+  roles:
+    - "slapd"
+
+- name: Clean
+  hosts: localhost
+  vars:
+    test_host_names:
+      - "slapd-test-1"
+  tasks:
+    - name: Clean
+      ansible.builtin.include_tasks: "clean.yml"

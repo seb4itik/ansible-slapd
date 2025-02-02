@@ -1,0 +1,110 @@
+- name: Prepare
+  hosts: localhost
+  vars:
+    test_host_names:
+      - "slapd-test-1"
+  tasks:
+    - name: Clean
+      ansible.builtin.include_tasks: "clean.yml"
+    - name: Prepare
+      ansible.builtin.include_tasks: "prepare.yml"
+
+- name: Generate self-signed certificate
+  hosts: ldap
+  become: true
+  tasks:
+    - name: Install required packages
+      ansible.builtin.apt:
+        name:
+          - "python3-cryptography"
+          - "ssl-cert"
+    - name: Ensure private key is present
+      community.crypto.openssl_privatekey:
+        path: "/etc/ssl/private/_.test.me.key"
+        type: "RSA"
+        size: 2048
+        mode: "0640"
+        group: "ssl-cert"
+    - name: Create a CSR
+      community.crypto.openssl_csr:
+        path: "/etc/ssl/certs/_.test.me.csr"
+        privatekey_path: "/etc/ssl/private/_.test.me.key"
+        common_name: "*.test.me"
+    - name: Generate self-signed certificate
+      community.crypto.x509_certificate:
+        path: "/etc/ssl/certs/_.test.me.crt"
+        csr_path: "/etc/ssl/certs/_.test.me.csr"
+        privatekey_path: "/etc/ssl/private/_.test.me.key"
+        provider: "selfsigned"
+
+- name: Test 01 - Test
+  hosts: ldap
+  become: true
+  vars:
+    slapd_ssl: true
+    slapd_monitor: true
+    slapd_monitor_admin: "gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth"
+    slapd_modules:
+      - "back_ldap"
+      - "back_mdb"
+      - "constraint"
+      - "dynlist"
+    slapd_schemas:
+      - "misc"
+    slapd_config_olc:
+      olcTLSCertificateFile: "/etc/ssl/certs/_.test.me.crt"
+      olcTLSCertificateKeyFile: "/etc/ssl/private/_.test.me.key"
+    slapd_config_backends:
+      - db_type: "ldap"
+        attributes:
+          olcSuffix: "dc=another,dc=me"
+          olcDbURI: "ldaps:///ldap1.another.me"
+      - db_type: "mdb"
+        overlays:
+          - name: "constraint"
+            attributes:
+              olcConstraintAttribute:
+                - "mail regex ^[[:alnum:]]+@mydomain.com$"
+                - "sn regex ^[[:alpha:]]+$"
+        attributes:
+          olcSuffix: "dc=test,dc=me"
+          olcDbDirectory: "/var/lib/ldap-test-me"
+          olcRootDN: "cn=admin,dc=test,dc=me"
+          olcRootPW: "abc123"
+          olcDbCheckpoint: "512 30"
+          olcDbMaxSize: 2147483648  # 2 Go
+          olcLastMod: "TRUE"
+          olcSizeLimit: 1500
+          olcLimits:
+            - '{0}dn.base="cn=SyncRepl,ou=DIT Roles,dc=test,dc=me" size=unlimited time=unlimited'
+          olcDbIndex:
+            - "objectClass eq"
+            - "cn,uid eq"
+            - "uidNumber,gidNumber eq"
+            - "member,uniqueMember,memberUid eq"
+            - "sn eq,sub"
+            - "givenName eq,sub"
+            - "mail eq"
+          olcAccess:
+            - '{0}to attrs=userPassword,shadowLastChange
+              by dn.base="cn=admin,ou=DIT Roles,dc=test,dc=me" write
+              by dn.base="cn=pwadmin,ou=DIT Roles,dc=test,dc=me" write
+              by anonymous auth
+              by self write
+              by * none'
+            - '{1}to dn.base=""
+              by * read'
+            - '{2}to *
+              by dn.base="cn=admin,ou=DIT Roles,dc=test,dc=me" write
+              by * read'
+  roles:
+    - "slapd"
+
+- name: Clean
+  hosts: localhost
+  vars:
+    test_host_names:
+      - "slapd-test-1"
+  tasks:
+    - name: Clean
+      ansible.builtin.include_tasks: "clean.yml"
