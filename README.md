@@ -13,6 +13,7 @@ The best Ansible Role ;-) for installing and configuring OpenLDAP `slapd` with m
 - Monitor backend activation.
 - Apparmor aware (for Ubuntu).
 - Debian and Ubuntu friendly (anyone for Redhat likes and other platforms?).
+- Possibility to create a minimal DIT with root DN and first level organizational units.
 - A developer/maintainer willing to receive feedback and bug reports.
 
 
